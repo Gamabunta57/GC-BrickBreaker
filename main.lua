@@ -51,7 +51,7 @@ function love.load()
     Brick.init()
     initSounds()
     racket = Racket.new()
-    ball = Ball.new()
+    ball = Ball.new(racket)
     reset()
     love.event.push("gameStart")
 end
@@ -64,42 +64,9 @@ function love.update(dt)
         racket.x = 0
     end 
 
-    if(ball.glued) then
-        ball.x = racket.x + racket.width / 2 - ball.r
-    else
-        ball.x = ball.x + ball.vx * dt
-        ball.y = ball.y + ball.vy * dt
+    ball:update(dt)
+    if(not(ball.glued)) then
         checkCollisionWithBrick()
-    end
-
-    if(ball.x + ball.r >= window.width) then
-        ball.vx = -ball.vx
-        ball.x = window.width - ball.r
-        love.event.push("ballHit")
-    elseif(ball.x - ball.r <= 0) then
-        ball.vx = - ball.vx
-        ball.x = ball.r
-        love.event.push("ballHit")
-    end
-
-    if  not(ball.glued) and
-        racket.y - ball.r <= ball.y and
-        racket.x - ball.r <= ball.x and
-        racket.x + racket.width + ball.r > ball.x
-    then
-        ball.y = racket.y - ball.r
-        ball.vy = -math.abs(ball.vy)
-        love.event.push("ballHit")
-    end
-
-    if(ball.y + ball.r >= window.height) then
-        ball:reset()
-        ball.x = racket.x + racket.width / 2
-        love.event.push("ballHit")
-    elseif(ball.y - ball.r <= 0) then
-        ball.vy = -ball.vy
-        ball.y = ball.r
-        love.event.push("ballHit")
     end
 end
 
