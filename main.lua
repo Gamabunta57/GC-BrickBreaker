@@ -73,8 +73,8 @@ end
 function love.mousepressed(x, y, button)
     if(button == 1 and ball.glued) then
         ball.glued = false
-        ball.vx = 200
-        ball.vy = - 250
+        ball.vx = 0
+        ball.vy = -ball.speed
     end
 end
 

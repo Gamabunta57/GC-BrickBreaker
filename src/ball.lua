@@ -15,7 +15,9 @@ function Ball.new(racket)
         sampleRate = 0.01,
         currentSampleTime = 0,
         currentIndex = 1,
-        ghostDecreaseSpeed = 3
+        ghostDecreaseSpeed = 3,
+        bounceAngleRange = 150,
+        speed = 350
     }
     ball.currentSampleTime = ball.sampleRate
     setmetatable(ball, Ball)
@@ -55,6 +57,7 @@ function Ball:update(dt)
         self.x = self.x + self.vx * dt
         self.y = self.y + self.vy * dt
     end
+
     if(self.x + self.r >= window.width) then
         self.vx = -self.vx
         self.x = window.width - self.r
@@ -70,7 +73,13 @@ function Ball:update(dt)
         self.racket.x + self.racket.width + self.r > self.x
     then
         self.y = self.racket.y - self.r
-        self.vy = -math.abs(self.vy)
+
+        local hitZone = (self.x + self.r - self.racket.x) / self.racket.width;
+        local angle = (90 + self.bounceAngleRange / 2) - self.bounceAngleRange * hitZone
+
+        self.vy = math.sin(math.rad(angle)) * -self.speed 
+        self.vx = math.cos(math.rad(angle)) * self.speed
+
         love.event.push("ballHit")
     end
 
