@@ -86,7 +86,7 @@ function Ball:update(dt)
     if(self.y + self.r >= window.height) then
         self:reset()
         self.x = self.racket.x + self.racket.width / 2
-        love.event.push("ballHit")
+        love.event.push("ballLost")
     elseif(self.y - self.r <= 0) then
         self.vy = -self.vy
         self.y = self.r

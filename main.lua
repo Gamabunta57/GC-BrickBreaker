@@ -17,9 +17,9 @@ ball = nil
 bricks = {}
 image = nil
 brickCount = 0
+lifeCount = 3
 
 levels = {
-    --[[
     {
         {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
         {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -36,7 +36,8 @@ levels = {
         {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
         {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
     },
-    ]]
+    
+    --[[
     {
         {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
         {0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0},
@@ -60,7 +61,7 @@ levels = {
         {0, 3, 2, 1, 2, 3, 1, 1, 2, 3, 2, 1, 1, 3, 2, 1, 1, 2, 3, 0},
         {0, 1, 1, 1, 1, 1, 1, 3, 3, 3, 3, 3, 1, 1, 1, 1, 1, 1, 1, 0},
         {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    },
+    },]]
     currentLevel = 1
 }
 
@@ -87,6 +88,10 @@ function love.update(dt)
     if(not(ball.glued)) then
         checkCollisionWithBrick()
     end
+
+    if(lifeCount <= 0) then
+        reset()
+    end 
 end
 
 function love.mousepressed(x, y, button)
@@ -109,9 +114,16 @@ function love.draw()
     end
 
     love.graphics.print("Bricks: "..brickCount, 10, 10);
+    love.graphics.print("Life: "..lifeCount, window.width - 50, 10);
 end
 
 function reset()
+    lifeCount = 3
+    setLevel(1)
+end
+
+function setLevel(level)
+    levels.currentLevel = level;
     ball:reset()
     racket:reset()
     bricks = {}
@@ -156,7 +168,7 @@ function checkCollisionWithBrick()
         if levels.currentLevel > #levels then
             levels.currentLevel = 1
         end
-        reset()
+        setLevel(levels.currentLevel)
     end
 end
 
@@ -184,4 +196,10 @@ end
 love.handlers.brickBreak = function ()
     sounds.brickBreak:stop()
     sounds.brickBreak:play()
+end
+
+love.handlers.ballLost = function()
+    sounds.ballHit:stop()
+    sounds.ballHit:play()
+    lifeCount = lifeCount - 1
 end
