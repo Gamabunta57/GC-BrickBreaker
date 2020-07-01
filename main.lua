@@ -16,8 +16,27 @@ racket = nil
 ball = nil
 bricks = {}
 image = nil
+brickCount = 0
 
 levels = {
+    --[[
+    {
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    },
+    {
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    },
+    ]]
     {
         {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
         {0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0},
@@ -88,6 +107,8 @@ function love.draw()
             end
         end
     end
+
+    love.graphics.print("Bricks: "..brickCount, 10, 10);
 end
 
 function reset()
@@ -104,6 +125,9 @@ function reset()
         for i = 1, brickPerRowCount do
             local brick = Brick.new((i - 1) * Brick.width, (j - 1) * Brick.height, level[j][i])
             table.insert(brickRow, brick)
+            if(brick.life > 0) then
+                brickCount = brickCount + 1
+            end
         end
         table.insert(bricks, brickRow)
     end
@@ -123,7 +147,16 @@ function checkCollisionWithBrick()
             love.event.push("ballHit")
         else
             love.event.push("brickBreak")
+            brickCount = brickCount - 1
         end
+    end
+
+    if(brickCount == 0) then
+        levels.currentLevel = levels.currentLevel + 1 
+        if levels.currentLevel > #levels then
+            levels.currentLevel = 1
+        end
+        reset()
     end
 end
 
